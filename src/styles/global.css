@@ -2,14 +2,14 @@
    Brand colors — change these few values to re-theme the whole site.
    ───────────────────────────────────────────────────────────── */
 :root {
-  /* From the original Hit12me site: navy, sunset orange, light gray */
+  /* Original Hit12me palette: navy #0a1c38, orange #ef9558, light gray #e0e0e0, warm gray #a7a6a0, charcoal #38383a */
   --bg: #0a1c38;          /* page background (navy) */
   --bg-deep: #061328;     /* darker navy for overlays and footer */
   --surface: #0f2547;     /* cards, panels */
   --surface-2: #153058;   /* inputs, hover */
   --line: #22406c;        /* borders */
   --text: #f3f1ec;        /* main text */
-  --muted: #a7b3c7;       /* secondary text */
+  --muted: #a7a6a0;       /* secondary text (warm gray from the original palette) */
   --accent: #ef9558;      /* orange: links, buttons, highlights */
   --accent-ink: #0a1c38;  /* text on orange buttons */
   --paper: #e0e0e0;       /* light gray bands */
