@@ -54,7 +54,7 @@ const aboutPhoto = coverFor(photosIn('pages/about'));
     ))}
   </section>
 
-  <section class="wrap section about reveal">
+  <section class="band"><div class="wrap section about reveal">
     <div class="about-media">
       {aboutPhoto ? <Image src={aboutPhoto.image} alt={site.owner} widths={[500, 900]} sizes="(max-width: 860px) 100vw, 40vw" quality={82} /> : <div class="ph" />}
     </div>
@@ -64,7 +64,7 @@ const aboutPhoto = coverFor(photosIn('pages/about'));
       <p class="muted">I grew up in northern Montana playing just about every sport there is. These days that drive goes into photography — chasing light in National Parks, pulling the Milky Way out of a dark sky, and shooting from the photo well at ballparks and gyms.</p>
       <a class="btn ghost" href="/about">More about me</a>
     </div>
-  </section>
+  </div></section>
 
   <section class="wrap cta reveal">
     <h2>Have a shoot in mind, or interested in a print?</h2>
@@ -76,8 +76,8 @@ const aboutPhoto = coverFor(photosIn('pages/about'));
   .hero { position: relative; min-height: 100svh; display: flex; align-items: flex-end; color: #fff; overflow: hidden; }
   .hero :global(.hero-img), .hero-fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .hero :global(.hero-img) { animation: zoom 18s ease-out both; }
-  .hero-fallback { background: radial-gradient(90% 80% at 70% 20%, #3a2c14, transparent 60%), radial-gradient(80% 80% at 10% 90%, #12202a, transparent 60%), var(--bg); }
-  .hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(8,9,10,.9), rgba(8,9,10,.25) 55%, rgba(8,9,10,.15)); }
+  .hero-fallback { background: radial-gradient(90% 80% at 75% 15%, rgba(239,149,88,.35), transparent 60%), radial-gradient(80% 80% at 10% 90%, #153058, transparent 60%), var(--bg); }
+  .hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(6,19,40,.9), rgba(6,19,40,.25) 55%, rgba(6,19,40,.15)); }
   .hero-text { position: relative; z-index: 1; padding-block: 140px clamp(56px, 10vw, 120px); }
   .hero h1 { font-size: clamp(46px, 8.5vw, 120px); max-width: 13ch; margin: 18px 0 22px; }
   .sub { font-size: clamp(17px, 1.7vw, 21px); max-width: 46ch; color: rgba(255,255,255,.82); }
@@ -89,7 +89,7 @@ const aboutPhoto = coverFor(photosIn('pages/about'));
   .tile { position: relative; min-height: clamp(360px, 46vw, 560px); border-radius: var(--radius); overflow: hidden; text-decoration: none; color: #fff; display: flex; align-items: flex-end; background: var(--surface); }
   .tile :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s cubic-bezier(.2,.7,.2,1); }
   .tile:hover :global(img) { transform: scale(1.05); }
-  .tile::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.85), rgba(0,0,0,.05) 65%); }
+  .tile::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(6,19,40,.9), rgba(6,19,40,.05) 65%); }
   .tile-text { position: relative; z-index: 1; padding: clamp(24px, 3vw, 40px); }
   .tile h2 { font-size: clamp(36px, 4.5vw, 56px); margin: 10px 0 10px; }
   .tile p:not(.eyebrow) { color: rgba(255,255,255,.8); max-width: 40ch; margin: 0; }
@@ -98,12 +98,12 @@ const aboutPhoto = coverFor(photosIn('pages/about'));
   @media (max-width: 860px) { .tiles { grid-template-columns: 1fr; } .arrow { display: none; } }
 
   .about { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(32px, 6vw, 88px); align-items: center; }
-  .about-media { border-radius: var(--radius); overflow: hidden; aspect-ratio: 4 / 5; background: var(--surface); }
+  .about-media { border-radius: var(--radius); overflow: hidden; aspect-ratio: 4 / 5; background: #cfd3d9; box-shadow: 0 30px 60px -30px rgba(10,28,56,.45); }
   .about-media :global(img) { width: 100%; height: 100%; object-fit: cover; }
   .about h2 { font-size: clamp(30px, 3.8vw, 46px); margin: 14px 0 20px; }
   .about p.muted { font-size: 18px; margin-bottom: 28px; }
   @media (max-width: 860px) { .about { grid-template-columns: 1fr; } .about-media { aspect-ratio: 3 / 2; } }
 
-  .cta { text-align: center; padding-block: clamp(40px, 7vw, 96px) clamp(64px, 9vw, 120px); border-top: 1px solid var(--line); }
+  .cta { text-align: center; padding-block: clamp(64px, 9vw, 120px); }
   .cta h2 { font-size: clamp(30px, 4.4vw, 54px); max-width: 20ch; margin: 0 auto 30px; }
 </style>

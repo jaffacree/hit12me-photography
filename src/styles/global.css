@@ -2,16 +2,20 @@
    Brand colors — change these few values to re-theme the whole site.
    ───────────────────────────────────────────────────────────── */
 :root {
-  --bg: #0e0f11;          /* page background */
-  --surface: #17191d;     /* cards, panels */
-  --surface-2: #20232a;   /* inputs, hover */
-  --line: #2b2f37;        /* borders */
-  --text: #eceae4;        /* main text */
-  --muted: #a3a29c;       /* secondary text */
-  --accent: #d9a441;      /* links, buttons, highlights */
-  --accent-ink: #15120a;  /* text on accent buttons */
+  /* From the original Hit12me site: navy, sunset orange, light gray */
+  --bg: #0a1c38;          /* page background (navy) */
+  --bg-deep: #061328;     /* darker navy for overlays and footer */
+  --surface: #0f2547;     /* cards, panels */
+  --surface-2: #153058;   /* inputs, hover */
+  --line: #22406c;        /* borders */
+  --text: #f3f1ec;        /* main text */
+  --muted: #a7b3c7;       /* secondary text */
+  --accent: #ef9558;      /* orange: links, buttons, highlights */
+  --accent-ink: #0a1c38;  /* text on orange buttons */
+  --paper: #e0e0e0;       /* light gray bands */
+  --paper-ink: #0a1c38;   /* text on light gray */
 
-  --font-display: 'Fraunces', Georgia, serif;
+  --font-display: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
   --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   --radius: 14px;
@@ -36,7 +40,7 @@ a { color: inherit; }
 ::selection { background: var(--accent); color: var(--accent-ink); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 
-h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.12; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
 p { margin: 0 0 1.2em; }
 
 .wrap { width: 100%; max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); }
@@ -73,3 +77,10 @@ p { margin: 0 0 1.2em; }
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
 }
+
+/* Light gray band, echoing the original site's header */
+.band { background: var(--paper); color: var(--paper-ink); }
+.band .muted { color: #4a5568; }
+.band .eyebrow { color: #c2652a; }
+.band .btn.ghost { color: var(--paper-ink); border-color: rgba(10,28,56,.35); }
+.band .btn.ghost:hover { border-color: var(--paper-ink); }

@@ -14,7 +14,7 @@ const active = (href: string) => path === href || path.startsWith(href + '/');
 <header class:list={['site-header', { transparent }]} data-header>
   <div class="wrap bar">
     <a href="/" class="brand" aria-label={`${site.name} home`}>
-      <span class="mark">{site.shortName}</span><span class="sub">Photography</span>
+      <span class="mark">Hit<em>12</em>me</span><span class="sub">Photography</span>
     </a>
     <button class="menu-btn" aria-expanded="false" aria-controls="site-nav" data-menu>
       <span class="sr">Menu</span><span class="bars" aria-hidden="true"></span>
@@ -43,7 +43,8 @@ const active = (href: string) => path === href || path.startsWith(href + '/');
   .site-header.transparent:not(.scrolled) { background: linear-gradient(to bottom, rgba(0,0,0,.55), transparent); backdrop-filter: none; -webkit-backdrop-filter: none; border-color: transparent; }
   .bar { display: flex; align-items: center; justify-content: space-between; height: 72px; }
   .brand { display: flex; align-items: baseline; gap: .5em; text-decoration: none; }
-  .mark { font: 600 24px/1 var(--font-display); letter-spacing: -0.01em; }
+  .mark { font: 800 22px/1 var(--font-display); letter-spacing: .02em; text-transform: uppercase; }
+  .mark em { font-style: normal; color: var(--accent); }
   .sub { font: 500 11px/1 var(--font-body); letter-spacing: .24em; text-transform: uppercase; color: var(--muted); }
   .nav { display: flex; align-items: center; gap: clamp(18px, 2.6vw, 34px); }
   .nav a { text-decoration: none; font-size: 15px; font-weight: 500; color: color-mix(in srgb, var(--text) 82%, transparent); position: relative; padding-block: 6px; }
