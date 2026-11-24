@@ -29,6 +29,25 @@ web addresses (`/blog/...` and `/sports-photo-blog/...`) still work.
 Each post keeps an `originalImages:` note listing the photos the Squarespace version used,
 so you can find them in Lightroom.
 
+## Importing the old Squarespace photos from your photo library
+
+`scripts/squarespace-photos.json` lists every photo each old post used, in gallery order.
+`scripts/import-photos.py` finds those files by name in your own library (such as a TrueNAS share),
+resizes them to 2560 px and puts them in the right post folders. Photos Squarespace renamed to
+"Photo Jul 06 2024, 7 16 58 PM.jpg" are matched by the time they were taken.
+
+On a computer that can see the NAS, in this project folder:
+
+```sh
+pip install pillow
+python3 scripts/import-photos.py "/Volumes/photos" --check   # report only: how many it can find
+python3 scripts/import-photos.py "/Volumes/photos"           # copy and resize
+git add src/photos && git commit -m "Add photos" && git push
+```
+
+Use your share's path: on a Mac `/Volumes/<share>`; on Windows `"\\truenas\photos"` or a mapped drive like `"Z:\Photos"`.
+Anything it can't find is listed in `scripts/photo-import-report.txt`.
+
 ## Writing a new post
 
 Make a new file in `src/content/blog/` (or `sports/`), e.g. `glacier-national-park.md`:
