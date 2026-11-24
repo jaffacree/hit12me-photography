@@ -1,0 +1,4 @@
+# Old Squarespace links that changed (typo fixed in the URL)
+/blog/biscayne-national-parl  /blog/biscayne-national-park  301
+# Old Squarespace RSS and misc. paths
+/blog?format=rss  /sitemap-index.xml  301

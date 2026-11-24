@@ -1,0 +1,109 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PostCard from '../components/PostCard.astro';
+import { site, sections } from '../site.config';
+import { getAllPosts, getPosts, postCover, postUrl } from '../lib/posts';
+import { photosIn, coverFor } from '../lib/photos';
+
+const all = await getAllPosts();
+const latest = all.slice(0, 6);
+// Home hero: put a photo in src/photos/pages/home/ — otherwise the newest post's cover is used.
+const heroPhoto = coverFor(photosIn('pages/home')) ?? all.map(postCover).find(Boolean);
+const [journal, sports] = await Promise.all([getPosts('blog'), getPosts('sports')]);
+const tiles = [
+  { s: sections.blog, count: journal.length, cover: journal.map(postCover).find(Boolean) },
+  { s: sections.sports, count: sports.length, cover: sports.map(postCover).find(Boolean) },
+];
+const aboutPhoto = coverFor(photosIn('pages/about'));
+---
+<Base transparentHeader>
+  <section class="hero">
+    {heroPhoto ? (
+      <Image src={heroPhoto.image} alt="" class="hero-img" widths={[800, 1400, 2000, 2800]} sizes="100vw" quality={85} loading="eager" fetchpriority="high" />
+    ) : <div class="hero-fallback" aria-hidden="true" />}
+    <div class="wrap hero-text">
+      <p class="eyebrow">{site.name}</p>
+      <h1>{site.tagline}.</h1>
+      <p class="sub">Landscapes, wildlife, astro, portraits and sports — photographed and written by {site.owner}.</p>
+      <div class="ctas">
+        <a class="btn" href={sections.blog.path}>Explore the journal</a>
+        <a class="btn ghost" href={sections.sports.path}>Sports photography</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <div class="section-head reveal">
+      <h2>Latest stories</h2>
+    </div>
+    <div class="grid">{latest.map((p) => <PostCard post={p} showSection />)}</div>
+  </section>
+
+  <section class="wrap tiles">
+    {tiles.map(({ s, count, cover }) => (
+      <a class="tile reveal" href={s.path}>
+        {cover && <Image src={cover.image} alt="" widths={[600, 1000, 1600]} sizes="(max-width: 860px) 100vw, 50vw" quality={80} />}
+        <div class="tile-text">
+          <p class="eyebrow">{count} stories</p>
+          <h2>{s.title}</h2>
+          <p>{s.blurb}</p>
+          <span class="arrow" aria-hidden="true">→</span>
+        </div>
+      </a>
+    ))}
+  </section>
+
+  <section class="wrap section about reveal">
+    <div class="about-media">
+      {aboutPhoto ? <Image src={aboutPhoto.image} alt={site.owner} widths={[500, 900]} sizes="(max-width: 860px) 100vw, 40vw" quality={82} /> : <div class="ph" />}
+    </div>
+    <div>
+      <p class="eyebrow">About</p>
+      <h2>Competitive with myself, every time I pick up the camera.</h2>
+      <p class="muted">I grew up in northern Montana playing just about every sport there is. These days that drive goes into photography — chasing light in National Parks, pulling the Milky Way out of a dark sky, and shooting from the photo well at ballparks and gyms.</p>
+      <a class="btn ghost" href="/about">More about me</a>
+    </div>
+  </section>
+
+  <section class="wrap cta reveal">
+    <h2>Have a shoot in mind, or interested in a print?</h2>
+    <a class="btn" href="/contact">Get in touch</a>
+  </section>
+</Base>
+
+<style>
+  .hero { position: relative; min-height: 100svh; display: flex; align-items: flex-end; color: #fff; overflow: hidden; }
+  .hero :global(.hero-img), .hero-fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .hero :global(.hero-img) { animation: zoom 18s ease-out both; }
+  .hero-fallback { background: radial-gradient(90% 80% at 70% 20%, #3a2c14, transparent 60%), radial-gradient(80% 80% at 10% 90%, #12202a, transparent 60%), var(--bg); }
+  .hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(8,9,10,.9), rgba(8,9,10,.25) 55%, rgba(8,9,10,.15)); }
+  .hero-text { position: relative; z-index: 1; padding-block: 140px clamp(56px, 10vw, 120px); }
+  .hero h1 { font-size: clamp(46px, 8.5vw, 120px); max-width: 13ch; margin: 18px 0 22px; }
+  .sub { font-size: clamp(17px, 1.7vw, 21px); max-width: 46ch; color: rgba(255,255,255,.82); }
+  .ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
+  .hero .btn.ghost { color: #fff; border-color: rgba(255,255,255,.45); }
+  @keyframes zoom { from { transform: scale(1.08); } to { transform: none; } }
+
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 2.4vw, 28px); }
+  .tile { position: relative; min-height: clamp(360px, 46vw, 560px); border-radius: var(--radius); overflow: hidden; text-decoration: none; color: #fff; display: flex; align-items: flex-end; background: var(--surface); }
+  .tile :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s cubic-bezier(.2,.7,.2,1); }
+  .tile:hover :global(img) { transform: scale(1.05); }
+  .tile::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.85), rgba(0,0,0,.05) 65%); }
+  .tile-text { position: relative; z-index: 1; padding: clamp(24px, 3vw, 40px); }
+  .tile h2 { font-size: clamp(36px, 4.5vw, 56px); margin: 10px 0 10px; }
+  .tile p:not(.eyebrow) { color: rgba(255,255,255,.8); max-width: 40ch; margin: 0; }
+  .arrow { position: absolute; right: clamp(24px, 3vw, 40px); bottom: clamp(24px, 3vw, 40px); font-size: 28px; transition: transform .3s; }
+  .tile:hover .arrow { transform: translateX(6px); }
+  @media (max-width: 860px) { .tiles { grid-template-columns: 1fr; } .arrow { display: none; } }
+
+  .about { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(32px, 6vw, 88px); align-items: center; }
+  .about-media { border-radius: var(--radius); overflow: hidden; aspect-ratio: 4 / 5; background: var(--surface); }
+  .about-media :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  .about h2 { font-size: clamp(30px, 3.8vw, 46px); margin: 14px 0 20px; }
+  .about p.muted { font-size: 18px; margin-bottom: 28px; }
+  @media (max-width: 860px) { .about { grid-template-columns: 1fr; } .about-media { aspect-ratio: 3 / 2; } }
+
+  .cta { text-align: center; padding-block: clamp(40px, 7vw, 96px) clamp(64px, 9vw, 120px); border-top: 1px solid var(--line); }
+  .cta h2 { font-size: clamp(30px, 4.4vw, 54px); max-width: 20ch; margin: 0 auto 30px; }
+</style>

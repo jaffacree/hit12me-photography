@@ -1,0 +1,43 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { site } from '../site.config';
+import { photosIn, coverFor } from '../lib/photos';
+const photo = coverFor(photosIn('pages/about'), 'IMG_0812');
+const genres = ['Landscapes', 'Wildlife', 'Astro', 'Portraits', 'Sports'];
+---
+<Base title="About" description={`About ${site.owner} — ${site.tagline}.`}>
+  <section class="wrap about">
+    <div class="media">
+      {photo ? <Image src={photo.image} alt={site.owner} widths={[600, 1000, 1400]} sizes="(max-width: 900px) 100vw, 45vw" quality={85} loading="eager" /> : <div class="ph" />}
+    </div>
+    <div class="text">
+      <p class="eyebrow">About</p>
+      <h1>{site.tagline}</h1>
+      <p class="lede">My name is Dustin and I grew up in northern Montana. I have moved around a bit, but I can still feel the pull of Montana to bring me home.</p>
+      <p>I grew up playing many different sports (Baseball, Racquetball, Golf, Hockey, Softball) and my life revolved around that for a very long time. As I grew older, that competitive drive I once had, faded some.</p>
+      <p>For many years, I told myself that I would really enjoy taking pictures, but never got around to doing it. I finally got around to buying a camera and that competitive spirit I once had on the playing field, suddenly came back, but in a much different way. I am now competitive, not with others, but with myself. Every time I pick up the camera, I want to be a better photographer.</p>
+      <p>As I have gotten older, I really enjoy Fly Fishing, Camping and being outdoors. Most nice days, you can find me out fishing or taking photos.</p>
+      <p>I enjoy a more vibrant color space but I am not afraid to try new things with my photography. I shoot Astro, Landscapes, Wildlife, Portraits and Sports. I really like shooting Landscapes, Wildlife and Sports though. Astro is tough to shoot when you are living in larger cities. I really do enjoy pulling the Milky Way out of the seemingly black sky and showing people what lies beneath, I just don't get many opportunities to do it.</p>
+      <p>I really appreciate you visiting my page! I just bought a photo printer, so I will start selling prints once I get all of the logistics worked out. Thanks again for coming and I hope you enjoyed some of my art!!</p>
+      <ul class="genres">{genres.map((g) => <li>{g}</li>)}</ul>
+      <div class="ctas">
+        <a class="btn" href="/contact">Get in touch</a>
+        <a class="btn ghost" href={site.instagram} target="_blank" rel="noopener">Instagram {site.instagramHandle}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .about { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: clamp(32px, 6vw, 96px); align-items: start; padding-block: clamp(48px, 8vw, 110px); }
+  .media { position: sticky; top: 100px; border-radius: var(--radius); overflow: hidden; aspect-ratio: 4 / 5; background: var(--surface); }
+  .media :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  .ph { width: 100%; height: 100%; background: radial-gradient(100% 100% at 30% 20%, var(--surface-2), var(--surface)); }
+  h1 { font-size: clamp(42px, 6vw, 76px); margin: 14px 0 28px; }
+  .lede { font: 400 clamp(21px, 2.2vw, 25px)/1.5 var(--font-display); }
+  .text > p:not(.eyebrow):not(.lede) { color: color-mix(in srgb, var(--text) 88%, transparent); font-size: 18px; }
+  .genres { list-style: none; padding: 0; margin: 32px 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .genres li { border: 1px solid var(--line); padding: 7px 14px; border-radius: 99px; font-size: 14px; color: var(--muted); }
+  .ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+  @media (max-width: 900px) { .about { grid-template-columns: 1fr; } .media { position: static; aspect-ratio: 3 / 2; } }
+</style>

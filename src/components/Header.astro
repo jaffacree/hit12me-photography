@@ -1,0 +1,91 @@
+---
+import { site, sections } from '../site.config';
+interface Props { transparent?: boolean }
+const { transparent = false } = Astro.props;
+const path = Astro.url.pathname;
+const links = [
+  { href: sections.blog.path, label: sections.blog.label },
+  { href: sections.sports.path, label: sections.sports.label },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+];
+const active = (href: string) => path === href || path.startsWith(href + '/');
+---
+<header class:list={['site-header', { transparent }]} data-header>
+  <div class="wrap bar">
+    <a href="/" class="brand" aria-label={`${site.name} home`}>
+      <span class="mark">{site.shortName}</span><span class="sub">Photography</span>
+    </a>
+    <button class="menu-btn" aria-expanded="false" aria-controls="site-nav" data-menu>
+      <span class="sr">Menu</span><span class="bars" aria-hidden="true"></span>
+    </button>
+    <nav id="site-nav" class="nav" data-nav>
+      {links.map((l) => (
+        <a href={l.href} aria-current={active(l.href) ? 'page' : undefined}>{l.label}</a>
+      ))}
+      <a href={site.instagram} class="ig" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none"/></svg>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: saturate(140%) blur(14px);
+    -webkit-backdrop-filter: saturate(140%) blur(14px);
+    border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+    transition: background .3s ease, border-color .3s ease;
+  }
+  .site-header.transparent { position: fixed; inset: 0 0 auto 0; }
+  .site-header.transparent:not(.scrolled) { background: linear-gradient(to bottom, rgba(0,0,0,.55), transparent); backdrop-filter: none; -webkit-backdrop-filter: none; border-color: transparent; }
+  .bar { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+  .brand { display: flex; align-items: baseline; gap: .5em; text-decoration: none; }
+  .mark { font: 600 24px/1 var(--font-display); letter-spacing: -0.01em; }
+  .sub { font: 500 11px/1 var(--font-body); letter-spacing: .24em; text-transform: uppercase; color: var(--muted); }
+  .nav { display: flex; align-items: center; gap: clamp(18px, 2.6vw, 34px); }
+  .nav a { text-decoration: none; font-size: 15px; font-weight: 500; color: color-mix(in srgb, var(--text) 82%, transparent); position: relative; padding-block: 6px; }
+  .nav a:hover, .nav a[aria-current] { color: var(--text); }
+  .nav a[aria-current]::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--accent); border-radius: 2px; }
+  .ig { display: inline-flex; }
+  .menu-btn { display: none; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+  @media (max-width: 760px) {
+    .menu-btn { display: grid; place-items: center; width: 44px; height: 44px; margin-right: -10px; background: none; border: 0; color: var(--text); cursor: pointer; }
+    .bars, .bars::before, .bars::after { display: block; width: 22px; height: 2px; background: currentColor; border-radius: 2px; transition: transform .25s ease, opacity .2s; }
+    .bars { position: relative; }
+    .bars::before, .bars::after { content: ''; position: absolute; left: 0; }
+    .bars::before { top: -7px; } .bars::after { top: 7px; }
+    [aria-expanded='true'] .bars { background: transparent; }
+    [aria-expanded='true'] .bars::before { transform: translateY(7px) rotate(45deg); }
+    [aria-expanded='true'] .bars::after { transform: translateY(-7px) rotate(-45deg); }
+    .nav {
+      position: fixed; inset: 72px 0 auto 0; flex-direction: column; align-items: stretch; gap: 0;
+      background: var(--bg); border-bottom: 1px solid var(--line); padding: 8px var(--gutter) 20px;
+      transform: translateY(-8px); opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease;
+    }
+    .nav.open { opacity: 1; transform: none; pointer-events: auto; }
+    .nav a { font-size: 20px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .nav a[aria-current]::after { display: none; }
+    .nav a[aria-current] { color: var(--accent); }
+    .ig { border-bottom: 0 !important; }
+  }
+</style>
+
+<script>
+  const header = document.querySelector('[data-header]')!;
+  const btn = document.querySelector<HTMLButtonElement>('[data-menu]')!;
+  const nav = document.querySelector('[data-nav]')!;
+  btn.addEventListener('click', () => {
+    const open = btn.getAttribute('aria-expanded') !== 'true';
+    btn.setAttribute('aria-expanded', String(open));
+    nav.classList.toggle('open', open);
+    header.classList.toggle('scrolled', open || window.scrollY > 40);
+  });
+  const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 40 || nav.classList.contains('open'));
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>

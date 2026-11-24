@@ -1,0 +1,31 @@
+---
+import { site, sections } from '../site.config';
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="wrap inner">
+    <div>
+      <a href="/" class="brand">{site.name}</a>
+      <p class="muted">{site.tagline}.</p>
+    </div>
+    <nav aria-label="Footer">
+      <a href={sections.blog.path}>{sections.blog.label}</a>
+      <a href={sections.sports.path}>{sections.sports.label}</a>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+      <a href={site.instagram} target="_blank" rel="noopener">Instagram</a>
+    </nav>
+  </div>
+  <div class="wrap legal muted">© {year} {site.owner}. All photographs are copyrighted and may not be used without permission.</div>
+</footer>
+
+<style>
+  .site-footer { border-top: 1px solid var(--line); margin-top: 40px; padding-block: 48px 32px; font-size: 15px; }
+  .inner { display: flex; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+  .brand { font: 500 22px/1.2 var(--font-display); text-decoration: none; }
+  .inner p { margin: 6px 0 0; }
+  nav { display: flex; gap: 24px; flex-wrap: wrap; align-items: center; }
+  nav a { text-decoration: none; color: var(--muted); }
+  nav a:hover { color: var(--accent); }
+  .legal { margin-top: 36px; font-size: 13px; }
+</style>

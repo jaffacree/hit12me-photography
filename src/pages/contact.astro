@@ -1,0 +1,86 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../site.config';
+const topics = ['Portrait session', 'Sports / event coverage', 'Print purchase', 'Licensing a photo', 'Just saying hi'];
+---
+<Base title="Contact" description={`Get in touch with ${site.owner} about sessions, prints or licensing.`}>
+  <section class="wrap contact">
+    <div class="intro">
+      <p class="eyebrow">Contact</p>
+      <h1>Let's make something.</h1>
+      <p class="muted">Portrait sessions, sports and event coverage, prints, or a question about a photo — send a note and I'll get back to you soon.</p>
+      <ul class="direct">
+        <li><span class="muted">Email</span><a href={`mailto:${site.email}?subject=Website%20Query`}>{site.email}</a></li>
+        <li><span class="muted">Instagram</span><a href={site.instagram} target="_blank" rel="noopener">{site.instagramHandle}</a></li>
+      </ul>
+    </div>
+
+    <form class="form" method="POST" action="https://api.web3forms.com/submit" data-form>
+      <input type="hidden" name="access_key" value={site.web3formsKey} />
+      <input type="hidden" name="subject" value={`New message from ${site.name}`} />
+      <input type="hidden" name="from_name" value={site.name} />
+      <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+      <div class="row">
+        <label>Name<input name="name" required autocomplete="name" /></label>
+        <label>Email<input name="email" type="email" required autocomplete="email" /></label>
+      </div>
+      <label>What's this about?
+        <select name="topic">{topics.map((t) => <option>{t}</option>)}</select>
+      </label>
+      <label>Message<textarea name="message" rows="6" required></textarea></label>
+      <button class="btn" type="submit" data-submit>Send message</button>
+      <p class="status" role="status" aria-live="polite" data-status></p>
+      {!site.web3formsKey && <p class="setup">Form not connected yet: add your free Web3Forms access key in <code>src/site.config.ts</code>.</p>}
+    </form>
+  </section>
+</Base>
+
+<style>
+  .contact { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(36px, 7vw, 110px); padding-block: clamp(56px, 9vw, 120px); align-items: start; }
+  h1 { font-size: clamp(44px, 6.4vw, 84px); margin: 14px 0 22px; }
+  .intro p.muted { font-size: 19px; max-width: 40ch; }
+  .direct { list-style: none; padding: 0; margin: 36px 0 0; display: grid; gap: 16px; }
+  .direct li { display: grid; gap: 2px; }
+  .direct .muted { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; }
+  .direct a { color: var(--text); text-decoration: none; font-size: 18px; word-break: break-word; }
+  .direct a:hover { color: var(--accent); }
+
+  .form { display: grid; gap: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: calc(var(--radius) + 6px); padding: clamp(22px, 4vw, 40px); }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  label { display: grid; gap: 8px; font-size: 14px; font-weight: 500; color: var(--muted); }
+  input, select, textarea {
+    font: 400 16px/1.5 var(--font-body); color: var(--text);
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 13px 14px; width: 100%;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+  textarea { resize: vertical; min-height: 150px; }
+  .btn { justify-self: start; cursor: pointer; }
+  .btn[disabled] { opacity: .6; cursor: progress; }
+  .hp { display: none; }
+  .status { margin: 0; min-height: 1.5em; font-size: 15px; }
+  .status.ok { color: #8fd18f; } .status.err { color: #f08a7e; }
+  .setup { margin: 0; font-size: 13px; color: var(--accent); }
+  @media (max-width: 860px) { .contact { grid-template-columns: 1fr; } .row { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-form]')!;
+  const status = form.querySelector<HTMLElement>('[data-status]')!;
+  const btn = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    btn.disabled = true; status.className = 'status'; status.textContent = 'Sending…';
+    try {
+      const res = await fetch(form.action, { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(form) });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message || 'Something went wrong');
+      form.reset();
+      status.className = 'status ok'; status.textContent = "Thanks! Your message is on its way — I'll be in touch soon.";
+    } catch (err) {
+      status.className = 'status err';
+      status.textContent = 'Sorry, that didn\'t send. Please try again or email me directly.';
+    } finally { btn.disabled = false; }
+  });
+</script>

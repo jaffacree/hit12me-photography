@@ -1,0 +1,123 @@
+---
+import { Image, getImage } from 'astro:assets';
+import type { Photo } from '../lib/photos';
+interface Props { photos: Photo[]; title: string }
+const { photos, title } = Astro.props;
+
+// Large, high-quality versions for the full-screen viewer.
+const items = await Promise.all(
+  photos.map(async (p, i) => {
+    const w = Math.min(p.image.width, 2560);
+    const full = await getImage({ src: p.image, width: w, quality: 90, format: 'webp' });
+    return { ...p, i, full: full.src, fw: w, fh: Math.round((w * p.image.height) / p.image.width) };
+  }),
+);
+---
+{items.length > 0 && (
+  <section class="gallery" data-gallery aria-label={`${title} photos`}>
+    {items.map((p) => (
+      <a
+        href={p.full}
+        class="tile"
+        data-index={p.i}
+        data-w={p.fw}
+        data-h={p.fh}
+        style={`--r:${(p.image.width / p.image.height).toFixed(4)}`}
+      >
+        <Image src={p.image} alt={`${title} — photo ${p.i + 1}`} widths={[400, 700, 1100]} sizes="(max-width: 760px) 100vw, 50vw" quality={80} loading="lazy" />
+      </a>
+    ))}
+  </section>
+)}
+
+<dialog class="lightbox" data-lightbox aria-label="Photo viewer">
+  <div class="lb-stage" data-stage>
+    <img data-lb-img alt="" />
+  </div>
+  <div class="lb-top">
+    <span class="lb-count" data-count></span>
+    <button class="lb-btn" data-close aria-label="Close">
+      <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="1.8" fill="none"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <button class="lb-btn lb-nav prev" data-prev aria-label="Previous photo">
+    <svg viewBox="0 0 24 24" width="26" height="26" stroke="currentColor" stroke-width="1.8" fill="none"><path d="M15 5l-7 7 7 7"/></svg>
+  </button>
+  <button class="lb-btn lb-nav next" data-next aria-label="Next photo">
+    <svg viewBox="0 0 24 24" width="26" height="26" stroke="currentColor" stroke-width="1.8" fill="none"><path d="M9 5l7 7-7 7"/></svg>
+  </button>
+</dialog>
+
+<style>
+  /* Justified rows: each photo keeps its shape, rows fill the width. */
+  .gallery { display: flex; flex-wrap: wrap; gap: 8px; }
+  .gallery::after { content: ''; flex-grow: 999; }
+  .tile {
+    flex-grow: var(--r); flex-basis: calc(var(--r) * 260px);
+    aspect-ratio: var(--r); overflow: hidden; border-radius: 6px; background: var(--surface);
+    cursor: zoom-in; position: relative;
+  }
+  .tile :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform .8s cubic-bezier(.2,.7,.2,1), opacity .3s; }
+  .tile:hover :global(img) { transform: scale(1.03); }
+  @media (max-width: 560px) { .tile { flex-basis: calc(var(--r) * 170px); } .gallery { gap: 5px; } }
+
+  .lightbox { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: rgba(6,7,8,.97); color: #fff; overflow: hidden; }
+  .lightbox::backdrop { background: rgba(0,0,0,.9); }
+  .lb-stage { position: absolute; inset: 0; display: grid; place-items: center; padding: 64px clamp(8px, 6vw, 96px) 32px; touch-action: pan-y; }
+  .lb-stage img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; transition: opacity .25s ease; user-select: none; -webkit-user-drag: none; }
+  .lb-stage img.loading { opacity: .25; }
+  .lb-top { position: absolute; inset: 0 0 auto 0; display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; font-size: 14px; color: rgba(255,255,255,.75); }
+  .lb-btn { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); color: #fff; width: 46px; height: 46px; border-radius: 99px; display: grid; place-items: center; cursor: pointer; transition: background .2s; }
+  .lb-btn:hover { background: rgba(255,255,255,.16); }
+  .lb-nav { position: absolute; top: 50%; transform: translateY(-50%); }
+  .prev { left: 16px; } .next { right: 16px; }
+  @media (max-width: 760px) { .lb-nav { top: auto; bottom: 18px; transform: none; } .lb-stage { padding: 60px 4px 84px; } }
+</style>
+
+<script>
+  const gallery = document.querySelector<HTMLElement>('[data-gallery]');
+  const dlg = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+  if (gallery && dlg) {
+    const tiles = [...gallery.querySelectorAll<HTMLAnchorElement>('.tile')];
+    const img = dlg.querySelector<HTMLImageElement>('[data-lb-img]')!;
+    const count = dlg.querySelector<HTMLElement>('[data-count]')!;
+    let idx = 0;
+
+    const preload = (i: number) => { const t = tiles[(i + tiles.length) % tiles.length]; if (t) new Image().src = t.href; };
+    const show = (i: number) => {
+      idx = (i + tiles.length) % tiles.length;
+      const t = tiles[idx];
+      img.classList.add('loading');
+      img.onload = () => img.classList.remove('loading');
+      img.width = Number(t.dataset.w); img.height = Number(t.dataset.h);
+      img.src = t.href;
+      img.alt = t.querySelector('img')?.alt ?? '';
+      count.textContent = `${idx + 1} / ${tiles.length}`;
+      preload(idx + 1); preload(idx - 1);
+    };
+    const open = (i: number) => { show(i); dlg.showModal(); document.documentElement.style.overflow = 'hidden'; };
+    const close = () => dlg.close();
+    dlg.addEventListener('close', () => { document.documentElement.style.overflow = ''; tiles[idx]?.focus({ preventScroll: true }); });
+
+    tiles.forEach((t, i) => t.addEventListener('click', (e) => { e.preventDefault(); open(i); }));
+    dlg.querySelector('[data-close]')!.addEventListener('click', close);
+    dlg.querySelector('[data-prev]')!.addEventListener('click', () => show(idx - 1));
+    dlg.querySelector('[data-next]')!.addEventListener('click', () => show(idx + 1));
+    dlg.querySelector('[data-stage]')!.addEventListener('click', (e) => { if (e.target === e.currentTarget) close(); });
+    dlg.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') show(idx + 1);
+      else if (e.key === 'ArrowLeft') show(idx - 1);
+    });
+
+    // Swipe on phones and tablets
+    let x0: number | null = null, y0 = 0;
+    dlg.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+    dlg.addEventListener('touchend', (e) => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) show(idx + (dx < 0 ? 1 : -1));
+      else if (dy > 90 && Math.abs(dy) > Math.abs(dx)) close();
+      x0 = null;
+    });
+  }
+</script>
