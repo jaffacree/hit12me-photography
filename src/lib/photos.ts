@@ -12,7 +12,8 @@ export interface Photo {
 }
 
 const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
-const stem = (n: string) => n.replace(/\.[^.]+$/, '').trim().toLowerCase();
+// Ignores the extension, letter case, and a leading order number like "012-".
+const stem = (n: string) => n.replace(/\.[^.]+$/, '').replace(/^\d{3}-/, '').trim().toLowerCase();
 
 /** Photos directly inside src/photos/<folder>/, sorted by file name. */
 export function photosIn(folder: string): Photo[] {
